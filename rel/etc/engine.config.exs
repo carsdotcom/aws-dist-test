@@ -30,7 +30,7 @@ db_password =
       raise "Unable to get database password, command exited with status #{status}:\n#{output}"
   end
 
-config :engine, Example.Repo,
+config :engine, Engine.Repo,
   username: System.get_env("DATABASE_USER"),
   password: db_password,
   database: System.get_env("DATABASE_NAME"),
