@@ -2,7 +2,6 @@ use Mix.Config
 
 config :engine, Engine.Repo,
   adapter: Ecto.Adapters.Postgres
-  pool_size: 2
 
 config :logger,
   level: :info,
