@@ -43,4 +43,5 @@ artifacts:
         - bin/healthz
         - engine.tar.gz
         - web.tar.gz
+        - appspec.yml
       discard-paths: no
