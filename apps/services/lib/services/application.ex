@@ -14,7 +14,7 @@ defmodule Services.Application do
     children = [
       {Task.Supervisor, [name: Services.TaskSupervisor]},
       {Cluster.Supervisor, [topologies, [name: Services.Cluster]]},
-      {Services.Registry, [registry]},
+      {Services.Registry, registry},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
