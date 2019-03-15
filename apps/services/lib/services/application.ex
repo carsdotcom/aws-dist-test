@@ -7,6 +7,7 @@ defmodule Services.Application do
 
   def start(_type, _args) do
     topologies = Application.get_env(:services, Services.Cluster, [])
+    |> Keyword.fetch!(:topologies)
     registry = Application.get_env(:services, Services.Registry, [])
 
     # List all child processes to be supervised
