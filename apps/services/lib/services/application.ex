@@ -11,7 +11,7 @@ defmodule Services.Application do
 
     # List all child processes to be supervised
     children = [
-      {Task.Supervisor, [[name: Services.TaskSupervisor]]},
+      {Task.Supervisor, [name: Services.TaskSupervisor]},
       {Cluster.Supervisor, [topologies, [name: Services.Cluster]]},
       {Services.Registry, [registry]},
     ]
