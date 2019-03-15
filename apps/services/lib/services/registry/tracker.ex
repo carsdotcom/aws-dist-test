@@ -30,6 +30,12 @@ defmodule Services.Registry.Tracker do
     end
   end
 
+  def child_spec(args) do
+    %{id: __MODULE__,
+    start: {__MODULE__, :start_link, [args]},
+    type: :worker}
+  end
+
   @doc false
   def start_link(opts \\ []) when is_list(opts) do
     pubsub_server = Keyword.get(opts, :name, Services.Registry.PubSub)
