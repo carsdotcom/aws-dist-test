@@ -7,12 +7,12 @@ defmodule Services.Registry.Supervisor do
   end
 
   def init([opts]) do
-    {pubsub, registry} = Keyword.split(opts, [:pool_size])
+    {pubsub, registry} = Keyword.split(opts, [:pool_size, :name])
 
     registry = Keyword.put(registry, :name, Services.Registry)
 
     children = [
-      {Phoenix.PubSub.PG2, [Services.Registry.PubSub, pubsub]},
+      {Phoenix.PubSub.PG2, pubsub},
       {Services.Registry.Tracker, [registry]},
     ]
 
