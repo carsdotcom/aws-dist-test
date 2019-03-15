@@ -19,24 +19,6 @@ cond do
     :ok
 end
 
-# Pull database password from SSM
-db_secret_name = "/#{app}/#{env}/database/password"
-db_password =
-  case System.cmd(aws, ["ssm", "get-parameter", "--region=#{region}", "--name=#{db_secret_name}", "--with-decryption"]) do
-    {json, 0} ->
-      %{"Parameter" => %{"Value" => password}} = Jason.decode!(json)
-      password
-    {output, status} ->
-      raise "Unable to get database password, command exited with status #{status}:\n#{output}"
-  end
-
-config :engine, Example.Repo,
-  username: System.get_env("DATABASE_USER"),
-  password: db_password,
-  database: System.get_env("DATABASE_NAME"),
-  hostname: System.get_env("DATABASE_HOST"),
-  pool_size: 15
-
 # Set configuration for Phoenix endpoint
 config :web, ExampleWeb.Endpoint,
   http: [port: 4000],

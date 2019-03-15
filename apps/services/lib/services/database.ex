@@ -28,6 +28,9 @@ defmodule Services.Database do
     impl().start_link(args)
   end
 
+  def child_spec(args) when is_list(args) do
+    impl().child_spec(args)
+  end
 
   @doc false
   def impl() do
