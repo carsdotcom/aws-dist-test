@@ -6,7 +6,7 @@ cd /opt/app || exit 1
 
 # Import env
 set -o allexport
-source ./etc/network-environment
+source /etc/network-environment
 source ./etc/environment
 set +o allexport
 
