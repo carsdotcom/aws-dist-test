@@ -32,7 +32,7 @@ defmodule Services.Registry.Tracker do
 
   def child_spec(args) do
     %{id: __MODULE__,
-    start: {__MODULE__, :start_link, [args]},
+    start: {__MODULE__, :start_link, args},
     type: :worker}
   end
 
