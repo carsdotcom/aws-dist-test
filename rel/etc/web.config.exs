@@ -24,7 +24,8 @@ config :web, ExampleWeb.Endpoint,
   http: [port: 4000],
   url: [host: "localhost", port: 4000],
   root: ".",
-  secret_key_base: "u1QXlca4XEZKb1o3HL/aUlznI1qstCNAQ6yme/lFbFIs0Iqiq/annZ+Ty8JyUCDc"
+  secret_key_base: "u1QXlca4XEZKb1o3HL/aUlznI1qstCNAQ6yme/lFbFIs0Iqiq/annZ+Ty8JyUCDc",
+  server: true
 
 config :services, Services.Database, Engine.Database
 config :services, Services.Todos, Engine.Todo
