@@ -44,9 +44,11 @@ config :services, Services.Cluster,
   topologies: [
     ec2: [
       strategy: ClusterEC2.Strategy.Tags,
-      ec2_tagname: "Name",
-      ec2_tagvalue: "#{app}-#{env}",
-      app_prefix: "distillery_example"
+      config: [
+        ec2_tagname: "Name",
+        ec2_tagvalue: "#{app}-#{env}",
+        app_prefix: "distillery_example"
+      ]
     ]
   ]
 
