@@ -36,12 +36,6 @@ artifacts:
       discard-paths: no
     apps:
       files:
-        - bin/unpack
-        - bin/stop
-        - bin/migrate
-        - bin/start
-        - bin/healthz
         - engine.tar.gz
         - web.tar.gz
-        - appspec.yml
       discard-paths: no
