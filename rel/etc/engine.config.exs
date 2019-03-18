@@ -53,8 +53,8 @@ config :services, Services.Cluster,
   ]
 
 config :services, Services.Registry,
-  log_level: :warn,
-  broadcast_period: 10,
+  log_level: :debug,
+  broadcast_period: 100,
   max_silent_periods: 2,
   pool_size: 1,
   name: Services.Registry.PubSub

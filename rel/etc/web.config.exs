@@ -25,7 +25,8 @@ config :web, ExampleWeb.Endpoint,
   url: [host: "localhost", port: 4000],
   root: ".",
   secret_key_base: "u1QXlca4XEZKb1o3HL/aUlznI1qstCNAQ6yme/lFbFIs0Iqiq/annZ+Ty8JyUCDc",
-  server: true
+  server: true,
+  debug_errors: true
 
 config :services, Services.Database, Engine.Database
 config :services, Services.Todos, Engine.Todo
@@ -43,8 +44,8 @@ config :services, Services.Cluster,
   ]
 
 config :services, Services.Registry,
-  log_level: :warn,
-  broadcast_period: 10,
+  log_level: :debug,
+  broadcast_period: 100,
   max_silent_periods: 2,
   pool_size: 1,
   name: Services.Registry.PubSub
