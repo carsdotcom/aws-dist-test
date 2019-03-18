@@ -12,7 +12,7 @@ defmodule Services.Service do
   @optional_callbacks [handle_service_call: 3]
 
   defmacro __using__(opts) when is_list(opts) do
-    service_type = Keyword.fetch(opts, :type)
+    service_type = Keyword.fetch!(opts, :type)
     quote do
       @behaviour unquote(__MODULE__)
       use GenServer

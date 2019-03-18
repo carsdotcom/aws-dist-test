@@ -50,6 +50,9 @@ defmodule Engine.Database do
     # Start polling again
     {:noreply, check(%{state | pid: nil, ref: nil})}
   end
+  def handle_info(_, state) do
+    {:noreply, state}
+  end
 
   defp check(%{pid: nil} = state) do
     pid = try_start()
