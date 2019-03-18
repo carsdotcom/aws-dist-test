@@ -8,7 +8,6 @@ phases:
   install:
     commands:
       - chmod +x bin/build
-      - bin/build install
   pre_build:
     commands:
       - bin/build pre_build

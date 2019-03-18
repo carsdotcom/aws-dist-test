@@ -182,7 +182,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: centos:7
+        Image: "docker.io/bitwalker/centos7-elixir"
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: ARTIFACT_S3_BUCKET
