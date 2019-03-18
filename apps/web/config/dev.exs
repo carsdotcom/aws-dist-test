@@ -54,4 +54,5 @@ config :engine, Engine.Repo,
   username: String.trim(username),
   database: "example_web_dev",
   hostname: "localhost",
-  pool_size: 10
+  pool_size: 10,
+  show_sensitive_data_on_connection_error: true

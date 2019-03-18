@@ -8,7 +8,7 @@ defmodule ExampleWeb.TodoController do
       {:error, reason} ->
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(500, reason)
+        |> send_resp(500, inspect(reason))
     end
   rescue
     err ->
