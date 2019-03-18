@@ -1129,8 +1129,8 @@ Resources:
       ServiceRoleArn: 
         Fn::ImportValue: !Sub "CodeDeployServiceRoleArn-${ApplicationName}"
       AutoScalingGroups:
-        - !Ref WebASG
         - !Ref EngineASG
+        - !Ref WebASG
 
 Outputs:
     WebsiteURL: 
