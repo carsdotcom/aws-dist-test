@@ -626,7 +626,7 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Description: "Allow Erlang Distribution to communicate between application nodes"
     Properties:
-        SourceSecurityGroupId: !GetAtt SecurityGroupApp.GroupId
+        SourceSecurityGroupId: !GetAtt SecurityGroupEngine.GroupId
         SourceSecurityGroupOwnerId: !Ref "AWS::AccountId"
         GroupId: !GetAtt SecurityGroupApp.GroupId
         IpProtocol: tcp
@@ -638,7 +638,7 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Description: "Allow Erlang Distribution to communicate between Engine application nodes"
     Properties:
-        SourceSecurityGroupId: !GetAtt SecurityGroupEngine.GroupId
+        SourceSecurityGroupId: !GetAtt SecurityGroupApp.GroupId
         SourceSecurityGroupOwnerId: !Ref "AWS::AccountId"
         GroupId: !GetAtt SecurityGroupEngine.GroupId
         IpProtocol: tcp
