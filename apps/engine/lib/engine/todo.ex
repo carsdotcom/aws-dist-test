@@ -6,14 +6,11 @@ defmodule Engine.Todo do
     field :title, :string
     field :completed, :boolean
 
-    timestamps [
-      type: :naive_datetime,
-      autogenerate: {NaiveDateTime, :utc_now, []}
-    ]
+    timestamps(type: :utc_datetime)
   end
 
   @doc """
-  Creates a Todo in the database 
+  Creates a Todo in the database
   """
   def create(%Ecto.Changeset{} = changeset) do
     result = Engine.Repo.insert(changeset)
@@ -26,7 +23,7 @@ defmodule Engine.Todo do
   end
 
   @doc """
-  Updates a Todo in the database 
+  Updates a Todo in the database
   """
   def update(params) do
     result =
@@ -70,7 +67,7 @@ defmodule Engine.Todo do
   @doc """
   Returns all Todos from the database
   """
-  def all() do 
+  def all() do
     todos =
       Engine.Repo.all(__MODULE__)
       |> Enum.map(&to_result/1)
