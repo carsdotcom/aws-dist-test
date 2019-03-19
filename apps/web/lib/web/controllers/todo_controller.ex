@@ -5,6 +5,7 @@ defmodule ExampleWeb.TodoController do
     case Services.Todos.all() do
       {:ok, todos} ->
         render(conn, "index.html", todos: todos)
+
       {:error, reason} ->
         conn
         |> put_resp_content_type("text/plain")
@@ -20,9 +21,10 @@ defmodule ExampleWeb.TodoController do
   def list(conn, _params) do
     case Services.Todos.all() do
       {:ok, todos} ->
-        ok(conn, todos)
+        render(conn, "list.json", %{data: todos})
+
       {:error, reason} ->
-        error(conn, "#{inspect reason}")
+        error(conn, "#{inspect(reason)}")
     end
   rescue
     err ->
@@ -32,11 +34,10 @@ defmodule ExampleWeb.TodoController do
   def create(conn, params) do
     with changeset = Services.Todos.changeset(params),
          {:ok, created} <- Services.Todos.create(changeset) do
-           IO.inspect created, label: :created
-      ok(conn, created)
+      json(conn, created)
     else
       {:error, reason} ->
-        error(conn, "#{inspect reason}")
+        error(conn, "#{inspect(reason)}")
     end
   rescue
     err ->
@@ -47,8 +48,9 @@ defmodule ExampleWeb.TodoController do
     case Services.Todos.update(params) do
       {:ok, _} ->
         send_resp(conn, 200, "")
+
       {:error, reason} ->
-        error(conn, "#{inspect reason}")
+        error(conn, "#{inspect(reason)}")
     end
   rescue
     err ->
@@ -59,8 +61,9 @@ defmodule ExampleWeb.TodoController do
     case Services.Todos.delete(id) do
       :ok ->
         send_resp(conn, 200, "")
+
       {:error, reason} ->
-        error(conn, "#{inspect reason}")
+        error(conn, "#{inspect(reason)}")
     end
   rescue
     err ->
@@ -71,8 +74,9 @@ defmodule ExampleWeb.TodoController do
     case Services.Todos.delete_all() do
       :ok ->
         send_resp(conn, 200, "")
+
       {:error, reason} ->
-        error(conn, "#{inspect reason}")
+        error(conn, "#{inspect(reason)}")
     end
   rescue
     err ->
@@ -85,6 +89,7 @@ defmodule ExampleWeb.TodoController do
 
   defp error(conn, reason) do
     err = %{message: reason}
+
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(400, Jason.encode!(err))
