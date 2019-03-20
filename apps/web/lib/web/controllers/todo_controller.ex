@@ -34,7 +34,8 @@ defmodule ExampleWeb.TodoController do
   def create(conn, params) do
     with changeset = Services.Todos.changeset(params),
          {:ok, created} <- Services.Todos.create(changeset) do
-      json(conn, created)
+      # json(conn, created)
+      render(conn, "show.json", %{data: created})
     else
       {:error, reason} ->
         error(conn, "#{inspect(reason)}")
