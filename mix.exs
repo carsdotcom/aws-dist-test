@@ -12,6 +12,7 @@ defmodule ExampleUmbrella.Mixfile do
   defp deps do
     [
       {:distillery, "~> 2.0"},
+      {:recon_ex, "~> 0.9.0"}
     ]
   end
 end
