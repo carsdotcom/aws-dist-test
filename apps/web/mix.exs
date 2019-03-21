@@ -45,6 +45,7 @@ defmodule Example.Mixfile do
       {:plug_cowboy, "~> 2.0"},
       {:jason, "~> 1.0"},
       {:gettext, "~> 0.11"},
+      {:recon_ex, "~> 0.9.0"}
     ]
   end
 
