@@ -8,10 +8,12 @@ use Mix.Config
 # Configures the endpoint
 config :web, ExampleWeb.Endpoint,
   url: [host: "localhost"],
+  http: [port: {:system, "APP_PORT"}],
   secret_key_base: "WLTAq0m3cyhaqufuub/5RyX8E8/s2UR2P1cVJVWn0d46GixiKO6yaTa6i8B8jbzS",
   render_errors: [view: ExampleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Example.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Example.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :web, ExampleWeb.Presence, logger: :error
 
 config :phoenix, :json_library, Jason
 
@@ -40,4 +42,4 @@ config :services, Services.Registry,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
