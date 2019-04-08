@@ -3,12 +3,14 @@ defmodule Services.Registry.Tracker do
   @moduledoc false
   @behaviour Phoenix.Tracker
 
-  @spec add(type :: term, pid) :: {:ok, String.t}
+  @spec add(type :: term, pid) :: {:ok, String.t()}
   def add(type, pid) do
-    Phoenix.Tracker.track(__MODULE__, pid, type, pid, %{node: node()})
+    # Phoenix.Tracker.track(__MODULE__, pid, type, pid, %{node: node()})
+    # Phoenix.Tracker.track(__MODULE__, pid, type, node(), %{node: node()})
+    Phoenix.Tracker.track(__MODULE__, pid, type, node(), %{})
   end
 
-  @spec remove(type :: term, pid) :: {:ok, String.t}
+  @spec remove(type :: term, pid) :: {:ok, String.t()}
   def remove(type, pid) do
     Phoenix.Tracker.untrack(__MODULE__, pid, type, pid)
   end
@@ -22,8 +24,8 @@ defmodule Services.Registry.Tracker do
   @spec find(type :: term, key :: term) :: {:ok, node, pid}
   def find(type, key \\ self()) do
     with [{_, ring}] <- :ets.lookup(__MODULE__.Types, type),
-         {service_node, service_pid} <- HashRing.key_to_node(ring, key) do
-      {:ok, service_node, service_pid}
+         service_node <- HashRing.key_to_node(ring, key) do
+      {:ok, service_node}
     else
       _ ->
         {:error, :service_unavailable}
@@ -31,16 +33,12 @@ defmodule Services.Registry.Tracker do
   end
 
   def child_spec(args) do
-    %{id: __MODULE__,
-    start: {__MODULE__, :start_link, args},
-    type: :worker}
+    %{id: __MODULE__, start: {__MODULE__, :start_link, args}, type: :worker}
   end
 
   @doc false
   def start_link(opts \\ []) when is_list(opts) do
-
-    full_opts =
-      Keyword.merge(opts, [name: __MODULE__, pubsub_server: Services.Registry.PubSub])
+    full_opts = Keyword.merge(opts, name: __MODULE__, pubsub_server: Services.Registry.PubSub)
     Phoenix.Tracker.start_link(__MODULE__, full_opts, full_opts)
   end
 
@@ -69,30 +67,26 @@ defmodule Services.Registry.Tracker do
   end
 
   defp remove_leaves(hash_ring, {type, {joins, leaves}}, state) do
-    Enum.reduce(leaves, hash_ring, fn {pid, meta}, acc ->
-      service_info = {meta.node, pid}
-
+    Enum.reduce(leaves, hash_ring, fn {node, meta}, acc ->
       has_joins =
         Enum.any?(joins, fn {joined, _meta_state} ->
-          joined == pid
+          joined == node
         end)
 
-      Phoenix.PubSub.direct_broadcast(node(), state.pubsub_server, type, {:leave, pid, meta})
+      Phoenix.PubSub.direct_broadcast(node(), state.pubsub_server, type, {:leave, node, meta})
 
       if has_joins do
         acc
       else
-        HashRing.remove_node(acc, service_info)
+        HashRing.remove_node(acc, node)
       end
     end)
   end
 
   defp add_joins(hash_ring, {type, {joins, _leaves}}, state) do
-    Enum.reduce(joins, hash_ring, fn {pid, meta}, acc ->
-      service_info = {meta.node, pid}
-      Phoenix.PubSub.direct_broadcast(node(), state.pubsub_server, type, {:join, pid, meta})
-
-      HashRing.add_node(acc, service_info)
+    Enum.reduce(joins, hash_ring, fn {node, meta}, acc ->
+      Phoenix.PubSub.direct_broadcast(node(), state.pubsub_server, type, {:join, node, meta})
+      HashRing.add_node(acc, node)
     end)
   end
 end

@@ -49,6 +49,7 @@ config :engine,
 
 # Configure your database
 {username, 0} = System.cmd("whoami", [])
+
 config :engine, Engine.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: String.trim(username),
