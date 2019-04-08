@@ -1,10 +1,10 @@
 defmodule Engine.Todo do
-  use Services.Todos
+  # use Services.Todos
   use Ecto.Schema
 
   schema "todos" do
-    field :title, :string
-    field :completed, :boolean
+    field(:title, :string)
+    field(:completed, :boolean)
 
     timestamps(type: :utc_datetime)
   end
@@ -14,9 +14,11 @@ defmodule Engine.Todo do
   """
   def create(%Ecto.Changeset{} = changeset) do
     result = Engine.Repo.insert(changeset)
+
     case result do
       {:ok, todo} ->
         {:ok, to_result(todo)}
+
       {:error, cs} ->
         to_error(cs)
     end
@@ -30,9 +32,11 @@ defmodule Engine.Todo do
       %__MODULE__{}
       |> changeset(params)
       |> Engine.Repo.update()
+
     case result do
       {:ok, todo} ->
         {:ok, to_result(todo)}
+
       {:error, cs} ->
         to_error(cs)
     end
@@ -48,6 +52,7 @@ defmodule Engine.Todo do
     else
       nil ->
         :ok
+
       {:error, cs} ->
         to_error(cs)
     end
@@ -71,6 +76,7 @@ defmodule Engine.Todo do
     todos =
       Engine.Repo.all(__MODULE__)
       |> Enum.map(&to_result/1)
+
     {:ok, todos}
   rescue
     err in [Ecto.QueryError] ->
@@ -82,6 +88,7 @@ defmodule Engine.Todo do
   the result is an Ecto.Changeset
   """
   def changeset(params), do: changeset(%__MODULE__{}, params)
+
   def changeset(%__MODULE__{} = todo, params) do
     todo
     |> Ecto.Changeset.cast(params, [:title, :completed])
@@ -95,6 +102,7 @@ defmodule Engine.Todo do
           String.replace(acc, "%{#{key}}", to_string(value))
         end)
       end)
+
     {:error, errs}
   end
 

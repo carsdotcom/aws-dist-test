@@ -3,12 +3,14 @@ defmodule Services.Registry.Tracker do
   @moduledoc false
   @behaviour Phoenix.Tracker
 
-  @spec add(type :: term, pid) :: {:ok, String.t}
+  @spec add(type :: term, pid) :: {:ok, String.t()}
   def add(type, pid) do
-    Phoenix.Tracker.track(__MODULE__, pid, type, pid, %{node: node()})
+    # Phoenix.Tracker.track(__MODULE__, pid, type, pid, %{node: node()})
+    # Phoenix.Tracker.track(__MODULE__, pid, type, node(), %{node: node()})
+    Phoenix.Tracker.track(__MODULE__, pid, type, node(), %{})
   end
 
-  @spec remove(type :: term, pid) :: {:ok, String.t}
+  @spec remove(type :: term, pid) :: {:ok, String.t()}
   def remove(type, pid) do
     Phoenix.Tracker.untrack(__MODULE__, pid, type, pid)
   end
@@ -31,16 +33,12 @@ defmodule Services.Registry.Tracker do
   end
 
   def child_spec(args) do
-    %{id: __MODULE__,
-    start: {__MODULE__, :start_link, args},
-    type: :worker}
+    %{id: __MODULE__, start: {__MODULE__, :start_link, args}, type: :worker}
   end
 
   @doc false
   def start_link(opts \\ []) when is_list(opts) do
-
-    full_opts =
-      Keyword.merge(opts, [name: __MODULE__, pubsub_server: Services.Registry.PubSub])
+    full_opts = Keyword.merge(opts, name: __MODULE__, pubsub_server: Services.Registry.PubSub)
     Phoenix.Tracker.start_link(__MODULE__, full_opts, full_opts)
   end
 
