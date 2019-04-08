@@ -10,13 +10,13 @@ defmodule Services.Registry do
   @doc """
   Add a service to the registry.
   """
-  @spec add(type :: term, pid) :: {:ok, String.t}
+  @spec add(type :: term, pid) :: {:ok, String.t()}
   defdelegate add(type, pid), to: __MODULE__.Tracker
 
   @doc """
   Remove a service from the registry.
   """
-  @spec remove(type :: term, pid) :: {:ok, String.t}
+  @spec remove(type :: term, pid) :: {:ok, String.t()}
   defdelegate remove(type, pid), to: __MODULE__.Tracker
 
   @doc """
@@ -35,7 +35,7 @@ defmodule Services.Registry do
   @doc """
   Cast a message to an instance of the service with the given type and key
   """
-  @spec cast(type :: term, key :: term, msg ::term) :: :ok | {:error, :service_unavailable}
+  @spec cast(type :: term, key :: term, msg :: term) :: :ok | {:error, :service_unavailable}
   def cast(type, key, msg) do
     case find(type, key) do
       {:ok, _node, pid} ->
@@ -50,7 +50,8 @@ defmodule Services.Registry do
   Call an instance of the service with the given type and key
   """
   @spec call(type :: term, key :: term, msg :: term) :: term | {:error, :service_unavailable}
-  @spec call(type :: term, key :: term, msg :: term, timeout) :: term | {:error, :service_unavailable}
+  @spec call(type :: term, key :: term, msg :: term, timeout) ::
+          term | {:error, :service_unavailable}
   def call(type, key, params, timeout \\ 5000) do
     case find(type, key) do
       {:ok, _node, pid} ->

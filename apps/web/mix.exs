@@ -9,11 +9,11 @@ defmodule Example.Mixfile do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
-      elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-      start_permanent: Mix.env == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(Mix.env)
+      deps: deps(Mix.env())
     ]
   end
 
@@ -29,12 +29,12 @@ defmodule Example.Mixfile do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Run engine alongside web in dev and test
-  defp deps(env) when env in [:dev, :test] do
-    [{:engine, in_umbrella: true} | deps(:prod)]
-  end
+  # defp deps(env) when env in [:dev, :test] do
+  #   [{:engine, in_umbrella: true} | deps(:prod)]
+  # end
   # In prod, engine will run as a separate release
   defp deps(_) do
     [
@@ -44,7 +44,7 @@ defmodule Example.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:plug_cowboy, "~> 2.0"},
       {:jason, "~> 1.0"},
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.11"}
     ]
   end
 
@@ -66,6 +66,7 @@ defmodule Example.Mixfile do
     static_dir = Path.join(Application.app_dir(:web, "priv"), "static")
     File.mkdir_p!(Path.join(static_dir, "js"))
     File.mkdir_p!(Path.join(static_dir, "css"))
+
     for item <- ["js", "css", "favicon.ico", "robots.txt"] do
       File.cp_r!(Path.join(assets_dir, item), Path.join(static_dir, item))
     end
@@ -73,6 +74,7 @@ defmodule Example.Mixfile do
 
   defp clean_assets(_args) do
     static_dir = Path.join(Application.app_dir(:web, "priv"), "static")
+
     for item <- ["js", "css", "favicon.ico", "robots.txt"] do
       File.rm_rf!(Path.join(static_dir, item))
     end
