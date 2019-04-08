@@ -29,7 +29,7 @@ config :services, Services.Cluster,
   topologies: [
     local: [
       strategy: Cluster.Strategy.Epmd,
-      config: [hosts: [:node2@localhost]]
+      config: [hosts: [:node2@localhost, :node3@localhost]]
     ]
   ]
 
