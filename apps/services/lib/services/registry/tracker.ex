@@ -5,27 +5,25 @@ defmodule Services.Registry.Tracker do
 
   @spec add(type :: term, pid) :: {:ok, String.t()}
   def add(type, pid) do
-    # Phoenix.Tracker.track(__MODULE__, pid, type, pid, %{node: node()})
-    # Phoenix.Tracker.track(__MODULE__, pid, type, node(), %{node: node()})
+    IO.puts("in add")
     Phoenix.Tracker.track(__MODULE__, pid, type, node(), %{})
   end
 
   @spec remove(type :: term, pid) :: {:ok, String.t()}
   def remove(type, pid) do
-    Phoenix.Tracker.untrack(__MODULE__, pid, type, pid)
+    IO.puts("in remove")
+    Phoenix.Tracker.untrack(__MODULE__, pid, type, node())
   end
 
-  @spec list(type :: term) :: [{pid, map}]
+  @spec list(type :: term) :: [{node, map}]
   def list(type) do
     Phoenix.Tracker.list(__MODULE__, type)
   end
 
-  @spec find(type :: term) :: {:ok, node, pid}
-  @spec find(type :: term, key :: term) :: {:ok, node, pid}
-  def find(type, key \\ self()) do
-    with [{_, ring}] <- :ets.lookup(__MODULE__.Types, type),
-         service_node <- HashRing.key_to_node(ring, key) do
-      {:ok, service_node}
+  @spec find(type :: term) :: {:ok, node} | {:error, :service_unavailable}
+  def find(type) do
+    with [{_, service_nodes}] <- :ets.lookup(__MODULE__.Types, type) do
+      {:ok, Enum.random(service_nodes)}
     else
       _ ->
         {:error, :service_unavailable}
@@ -46,47 +44,70 @@ defmodule Services.Registry.Tracker do
   def init(opts) when is_list(opts) do
     :ets.new(__MODULE__.Types, [:public, :set, :named_table])
     server = Keyword.fetch!(opts, :pubsub_server)
-    {:ok, %{pubsub_server: server, hash_rings: %{}}}
+    {:ok, %{pubsub_server: server}}
   end
 
   @doc false
-  def handle_diff(diff, %{hash_rings: hash_rings} = state) do
-    hash_rings =
-      Enum.reduce(diff, hash_rings, fn {type, _} = event, hash_rings ->
-        hash_ring =
-          hash_rings
-          |> Map.get(type, HashRing.new())
-          |> remove_leaves(event, state)
-          |> add_joins(event, state)
+  def handle_diff(diff, state) do
+    IO.puts("Handle Diff")
+    IO.puts("IM A DIFF => #{inspect(diff)}")
+    IO.puts("IM A STATE => #{inspect(state)}")
 
-        :ets.insert(__MODULE__.Types, {type, hash_ring})
-        Map.put(hash_rings, type, hash_ring)
-      end)
+    for {topic, {joins, leaves}} <- diff do
+      for {node, meta} <- joins do
+        IO.puts("presence join: node \"#{node}\" with meta #{inspect(meta)}")
 
-    {:ok, %{state | hash_rings: hash_rings}}
-  end
+        IO.puts("%%%%%%%%%%% #{inspect(:ets.lookup(__MODULE__.Types, Services.Todos))}")
 
-  defp remove_leaves(hash_ring, {type, {joins, leaves}}, state) do
-    Enum.reduce(leaves, hash_ring, fn {node, meta}, acc ->
-      has_joins =
-        Enum.any?(joins, fn {joined, _meta_state} ->
-          joined == node
-        end)
+        case :ets.lookup(__MODULE__.Types, Services.Todos) do
+          [{_, []}] ->
+            IO.puts("I DONT KNOW WHY IM HERE")
+            IO.puts("I AM THOR")
+            :ets.insert(__MODULE__.Types, {Services.Todos, [node]})
+            msg = {:join, node, meta}
+            :ok = Phoenix.PubSub.broadcast!(state.pubsub_server, topic, msg)
 
-      Phoenix.PubSub.direct_broadcast(node(), state.pubsub_server, type, {:leave, node, meta})
+          [{_, current_nodes}] ->
+            IO.puts("SHOULD ONLY BE HERE WHEN 1+ NODES")
+            IO.puts("node => #{inspect(node)}")
+            IO.puts("current nodes => #{inspect(current_nodes)}")
+            :ets.insert(__MODULE__.Types, {Services.Todos, Enum.uniq(current_nodes ++ [node])})
+            IO.puts("updated nodes => #{inspect(:ets.lookup(__MODULE__.Types, Services.Todos))}")
+            msg = {:join, node, meta}
+            :ok = Phoenix.PubSub.broadcast!(state.pubsub_server, topic, msg)
 
-      if has_joins do
-        acc
-      else
-        HashRing.remove_node(acc, node)
+          [] ->
+            IO.puts("SHOULD ONLY BE HERE WHEN THERE ARE NO NODES")
+            IO.puts("I AM GROOT")
+            :ets.insert(__MODULE__.Types, {Services.Todos, [node]})
+            msg = {:join, node, meta}
+            :ok = Phoenix.PubSub.broadcast!(state.pubsub_server, topic, msg)
+
+          x ->
+            IO.puts("I AM THANOS => #{inspect(x)}")
+        end
       end
-    end)
-  end
 
-  defp add_joins(hash_ring, {type, {joins, _leaves}}, state) do
-    Enum.reduce(joins, hash_ring, fn {node, meta}, acc ->
-      Phoenix.PubSub.direct_broadcast(node(), state.pubsub_server, type, {:join, node, meta})
-      HashRing.add_node(acc, node)
-    end)
+      for {key, meta} <- leaves do
+        IO.puts("presence leave: key \"#{key}\" with meta #{inspect(meta)}")
+
+        IO.puts("old_node_list => #{inspect(:ets.lookup(__MODULE__.Types, Services.Todos))}")
+
+        new_node_list =
+          :ets.lookup(__MODULE__.Types, Services.Todos)
+          |> hd
+          |> elem(1)
+          |> Enum.filter(fn val -> val != key end)
+
+        IO.puts("new_node_list => #{inspect(new_node_list)}")
+
+        # insert will overwrite since the key exists
+        :ets.insert(__MODULE__.Types, {Services.Todos, new_node_list})
+        msg = {:leave, key, meta}
+        :ok = Phoenix.PubSub.broadcast!(state.pubsub_server, topic, msg)
+      end
+    end
+
+    {:ok, state}
   end
 end

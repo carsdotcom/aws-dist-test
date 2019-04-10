@@ -29,36 +29,36 @@ defmodule Services.Registry do
   Find a service to use for a particular `key`
   """
   @spec find(type :: term) :: {:ok, node, pid}
-  @spec find(type :: term, key :: term) :: {:ok, node, pid}
-  defdelegate find(type, key \\ self()), to: __MODULE__.Tracker
+  @spec find(type :: term) :: {:ok, node, pid}
+  defdelegate find(type), to: __MODULE__.Tracker
 
   @doc """
   Cast a message to an instance of the service with the given type and key
   """
-  @spec cast(type :: term, key :: term, msg :: term) :: :ok | {:error, :service_unavailable}
-  def cast(type, key, msg) do
-    case find(type, key) do
-      {:ok, _node, pid} ->
-        GenServer.cast(pid, msg)
+  # @spec cast(type :: term, key :: term, msg :: term) :: :ok | {:error, :service_unavailable}
+  # def cast(type, key, msg) do
+  #   # case find(type, key) do
+  #   #   {:ok, _node, pid} ->
+  #   #     GenServer.cast(pid, msg)
 
-      _ ->
-        {:error, :service_unavailable}
-    end
-  end
+  #   #   _ ->
+  #   #     {:error, :service_unavailable}
+  #   # end
+  # end
 
   @doc """
   Call an instance of the service with the given type and key
   """
-  @spec call(type :: term, key :: term, msg :: term) :: term | {:error, :service_unavailable}
-  @spec call(type :: term, key :: term, msg :: term, timeout) ::
-          term | {:error, :service_unavailable}
-  def call(type, key, params, timeout \\ 5000) do
-    case find(type, key) do
-      {:ok, _node, pid} ->
-        GenServer.call(pid, params, timeout)
+  # @spec call(type :: term, key :: term, msg :: term) :: term | {:error, :service_unavailable}
+  # @spec call(type :: term, key :: term, msg :: term, timeout) ::
+  #         term | {:error, :service_unavailable}
+  # def call(type, key, params, timeout \\ 5000) do
+  #   case find(type, key) do
+  #     {:ok, _node, pid} ->
+  #       GenServer.call(pid, params, timeout)
 
-      _ ->
-        {:error, :service_unavailable}
-    end
-  end
+  #     _ ->
+  #       {:error, :service_unavailable}
+  #   end
+  # end
 end

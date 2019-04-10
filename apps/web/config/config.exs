@@ -22,7 +22,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
-config :services, Services.Database, Engine.Database
 config :services, Services.Todos, Engine.Todo
 
 config :services, Services.Cluster,

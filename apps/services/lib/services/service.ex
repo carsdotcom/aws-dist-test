@@ -61,14 +61,14 @@ defmodule Services.Service do
   """
   @spec call(module, atom, [term]) :: term | {:error, :service_unavailable}
   def call(service_type, function, args) do
-    case Registry.find(service_type, self()) do
+    case Registry.find(service_type) do
       {:ok, host} when host == node() ->
         IO.puts("LOCAL CALL")
         # Invoke directly since we're on the same node
         apply(service_type.impl(), function, args)
 
       {:ok, host} ->
-        IO.puts("REMOTE CALL")
+        IO.puts("REMOTE CALL to #{host}")
 
         task =
           Task.Supervisor.async(

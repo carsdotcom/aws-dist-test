@@ -13,7 +13,7 @@ config :services, Services.Cluster,
   topologies: [
     local: [
       strategy: Cluster.Strategy.Epmd,
-      config: [hosts: []]
+      config: [hosts: [:node1@localhost, :node2@localhost, :node3@localhost]]
     ]
   ]
 
@@ -24,4 +24,4 @@ config :services, Services.Registry,
   pool_size: 1,
   name: Services.Registry.PubSub
 
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
