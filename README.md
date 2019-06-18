@@ -2,6 +2,10 @@
 
 This application was forked and hacked on to develop a dynamic, multi-node registry and communication pattern.
 
+## Prerequisites
+
+- Install [AWS CLI](client: https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html)
+
 ## Running a Multi-Node Communciation Test Locally
 
 You need to have PostgreSQL installed locally. Adjust the configuration as needed.
@@ -9,8 +13,9 @@ You need to have PostgreSQL installed locally. Adjust the configuration as neede
 Assemble the application and establish the database structure:
 
 - `mix do deps.get, compile`
-- `mix ecto.create`
-- `mix ecto.migrate`
+- `cd apps/engine`
+- `DATABASE_HOST=localhost mix ecto.create`
+- `DATABASE_HOST=localhost mix ecto.migrate`
 
 ### Start Engine (the database app) as :node2
 
@@ -47,6 +52,13 @@ iex(node1@localhost)1> Node.connect :node2@localhost
 ```
 
 ### Test the Cross-Node Communication
+
+Insert at least one record into the `todos` table in the database:
+```
+$ psql -d example_web_dev
+example_web_dev=# insert into todos (title, completed, inserted_at, updated_at) values ('My New Todo', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+example_web_dev=# \q
+```
 
 To see the cross-node communication in action, call the `Services.Todos.all/1` function from the node running the `web` application.
 
